@@ -62,20 +62,10 @@ Phase 5  System Prompt注入 + 风格手册定稿 ✋
 
 ```bash
 # URL抓取
-python3 {skill_dir}/scripts/fetch_article.py <url> -o \/style_samples/article_{N}.md
+python3 {skill_dir}/scripts/fetch_article.py <url> -o {skill_dir}/references/exemplars/article_{N}.md
 
 # 本地保存
-# 文章存入 \/style_samples/
-```
-
-### 存档
-
-```bash
-# URL抓取
-python3 {skill_dir}/scripts/fetch_article.py <url> -o \/style_samples/article_{N}.md
-
-# 本地保存
-# 文章存入 \/style_samples/
+# 文章存入 {skill_dir}/references/exemplars/
 ```
 
 ### Phase 1 确认点
@@ -369,7 +359,7 @@ python3 {skill_dir}/scripts/fetch_article.py <url> -o \/style_samples/article_{N
 
 ```bash
 cp {skill_dir}/skills/style-learning/fixed/compliance.md \
-   {skill_dir}/references/compliance.md
+   {skill_dir}/skills/review/references/compliance.md
 ```
 
 ### 自测评验证
@@ -394,7 +384,7 @@ python3 {skill_dir}/skills/style-learning/scripts/self_eval.py \
   {skill_dir}/references/style_manual.md      # 通用风格手册（用户可见）
   {skill_dir}/references/platform_styles/     # 各平台差异化手册
   {skill_dir}/references/exemplars/          # 范文风格库（原始样本）
-  {skill_dir}/references/compliance.md       # 合规红线（固化资源）
+  {skill_dir}/skills/review/references/compliance.md       # 合规红线（固化资源）
 ```
 
 ### Phase 5 确认点
@@ -407,7 +397,7 @@ python3 {skill_dir}/skills/style-learning/scripts/self_eval.py \
 - references/style_manual.md — 通用风格手册
 - references/platform_styles/ — 各平台风格手册
 - references/exemplars/ — 范文样本库
-- references/compliance.md — 合规红线（固化资源）
+- skills/review/references/compliance.md — 合规红线（固化资源）
 
 自测评：✅ 通过
 

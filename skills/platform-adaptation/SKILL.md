@@ -18,7 +18,7 @@ description: |
 ## 输入
 
 ```
-审校后初稿：{skill_dir}/output/platforms/{date}_{title}/draft.md
+审校后初稿：{workspace}/drafts/{date}_{slug}/draft.md
 风格档案：{skill_dir}/references/style_manual.md
          {skill_dir}/references/platform_styles/
 平台列表：[微信HTML, 小红书, 微博, 知乎, 头条, 抖音, 哔哩哔哩]
@@ -29,7 +29,7 @@ description: |
 ## 输出结构
 
 ```
-{skill_dir}/output/platforms/{date}_{title}/
+{workspace}/drafts/{date}_{slug}/
 ├── draft.md                      # 审校后初稿
 ├── wechat/
 │   ├── article.html              # 内联样式 HTML

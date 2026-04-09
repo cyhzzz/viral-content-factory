@@ -336,7 +336,7 @@ python3 {skill_dir}/scripts/fetch_article.py <url> -o \/source_article.md
 
 保存完整分析报告到：
 ```
-{skill_dir}/output/platforms/{date}_{title}/analysis-report.md
+{skill_dir}/workspace/drafts/{date}_{slug}/analysis-report.md
 ```
 
 包含：

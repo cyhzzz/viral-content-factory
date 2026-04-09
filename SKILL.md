@@ -39,7 +39,9 @@ allowed-tools:
 **R5. 记忆沉淀**：每次创作完成后自动提取金句/标题/素材/观点写入 memory/。
 **R6. 进化优先**：feedback.md 的偏好信号优先级最高，覆盖默认风格参数。
 
-**路径约定**：`{skill_dir}` = 本 SKILL.md 所在目录。
+**路径约定**：
+- `{skill_dir}` = 本 SKILL.md 所在目录
+- `{workspace}` = config.yaml 中 `workspace` 字段（Init Round 1 后由用户指定）
 
 **完成协议**：
 - `DONE` — 全流程完成
@@ -233,7 +235,7 @@ Step 0        入口分流
 - `{skill_dir}/references/style_manual.md` — 通用风格手册
 - `{skill_dir}/references/platform_styles/` — 各平台风格手册（6个）
 - `{skill_dir}/references/exemplars/` — 范文样本
-- `{skill_dir}/references/compliance.md` — 合规红线
+- `{skill_dir}/skills/review/references/compliance.md` — 合规红线
 
 ### 2.3 风格展示与确认 ✋
 
@@ -351,12 +353,17 @@ python3 -c "import markdown, bs4, requests, yaml" 2>&1
 
 ### Step 1.3 热点抓取 + 选题
 
-```bash
-python3 {skill_dir}/scripts/fetch_hotspots.py --limit 30
-```
-降级：脚本报错 → WebSearch "今日财经热点"
+使用 LLM + WebSearch 主动抓取实时热点：
 
-生成10个选题（3-8热点 + 2-3冷门），含评分（热点潜力/SEO友好度/推荐框可能性）。
+1. LLM 调用 WebSearch 搜索"今日财经热点"、"A股今日行情"、"最新政策消息"等关键词
+2. 收集 15-20 条真实热点事件
+3. 结合 memory/topics.md 做去重，评估每条热点的：
+   - 热点潜力（传播度）
+   - SEO 友好度（关键词匹配）
+   - 推荐框可能性（是否有明确答案/数据）
+4. 生成 10 个选题（3-8 热点 + 2-3 冷门），含评分
+
+降级：脚本报错时使用 `python3 {skill_dir}/scripts/fetch_hotspots.py --limit 30`
 **结合 memory/topics.md 做去重**，避免推荐已写过的选题。
 
 - 全自动 → 选最高分
@@ -367,10 +374,10 @@ python3 {skill_dir}/scripts/fetch_hotspots.py --limit 30
 ### Step 1.4 框架选择
 
 路由到对应框架文件：
-- 市场评论 → `frameworks/market-comment.md`
-- 热点解读 → `frameworks/hotspot-interpretation.md`
-- 行业分析 → `frameworks/industry-analysis.md`
-- 投教营销 → `frameworks/invest-edu.md`
+- 市场评论 → `skills/content-type-framework/frameworks/market-comment.md`
+- 热点解读 → `skills/content-type-framework/frameworks/hotspot-interpretation.md`
+- 行业分析 → `skills/content-type-framework/frameworks/industry-analysis.md`
+- 投教营销 → `skills/content-type-framework/frameworks/invest-edu.md`
 
 ---
 
@@ -410,7 +417,7 @@ Step 1R.5  分析报告展示 ✋
 
 `读取: {skill_dir}/references/writing-guide.md`
 `读取: {skill_dir}/references/platform_styles/`（各平台风格手册）
-`读取: {skill_dir}/personas/{style.yaml writing_persona}.yaml`
+`读取: {skill_dir}/personas/{style.yaml中的writing_persona}.yaml`
 `读取: {skill_dir}/memory/golden-sentences.md`（匹配当前话题的金句）
 `读取: {skill_dir}/memory/materials.md`（匹配当前话题的素材）
 `读取: {skill_dir}/memory/viewpoints.md`（用户相关观点）
@@ -471,13 +478,13 @@ Error 全部修复后 → 进入 Step 5
 
 ## Step 5: 多平台改写
 
-`调用: Skill("skills/platform-adaptation"`
+`调用: Skill("skills/platform-adaptation")`
 输入：审校后初稿 + 风格档案 + Step 0.5 确认的平台列表
 
 **输出结构**：
 
 ```
-{workspace}/drafts/{date}_{title}/
+{workspace}/drafts/{date}_{slug}/
 ├── draft.md              # 审校后初稿
 ├── wechat/
 │   ├── article.html     # 内联样式 HTML
@@ -673,7 +680,7 @@ Error 全部修复后 → 进入 Step 5
 ├── memory/golden-sentences.md  ← 金句库
 └── memory/materials.md         ← 素材库
 
-输出目录：{workspace}/drafts/{date}_{title}/ → 确认发布后 → {workspace}/published/
+输出目录：{workspace}/drafts/{date}_{slug}/ → 确认发布后 → {workspace}/published/
 
 关键配置文件：
 ├── style.yaml                   ← 风格档案（核心）
@@ -681,7 +688,7 @@ Error 全部修复后 → 进入 Step 5
 ├── references/style_manual.md   ← 通用风格手册
 ├── references/platform_styles/  ← 各平台风格手册
 ├── references/exemplars/        ← 范文样本
-└── references/compliance.md     ← 合规红线
+└── skills/review/references/compliance.md ← 合规红线
 ```
 
 ---

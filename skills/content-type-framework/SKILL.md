@@ -25,7 +25,7 @@ description: |
 
 ### 路由入口
 
-读取 `references/topic-selection.md` 中的选题评分结果，或根据用户原始输入判断。
+读取 `{skill_dir}/references/topic-selection.md` 中的选题评分结果，或根据用户原始输入判断。
 
 ### 自动路由判断
 
