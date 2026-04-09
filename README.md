@@ -185,10 +185,18 @@ python3 toolkit/cli.py themes
 
 ## 安装
 
-**Claude Code**：
+**Claude Code（推荐）**：
 
 ```bash
-npx skills add cyhzzz/finance_aigc_skills/viral-content-factory
+npx skills add cyhzzz/viral-content-factory
+```
+
+**skills.sh 市场**：
+
+在 [skills.sh](https://skills.sh) 搜索 `viral-content-factory` 或 `爆款智坊`，或直接安装：
+
+```bash
+npx skills add @viral-content-factory
 ```
 
 **OpenClaw / WorkBuddy**：
