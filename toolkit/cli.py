@@ -4,7 +4,6 @@ CLI entry point for 爆款智坊.
 
 Usage:
     python cli.py preview article.md --theme professional-clean
-    python cli.py publish article.md --appid wx123 --secret abc123
     python cli.py themes
 """
 
@@ -17,8 +16,6 @@ import yaml
 
 from converter import WeChatConverter, preview_html
 from theme import load_theme, list_themes
-from wechat_api import get_access_token, upload_image, upload_thumb
-from publisher import create_draft, create_image_post
 from image_gen import render_poster
 
 # Config file search order
@@ -63,154 +60,12 @@ def cmd_preview(args):
         print("Opened in browser.")
 
 
-def cmd_publish(args):
-    """
-    [DEPRECATED] 直接发布到微信草稿箱已废弃。
-
-    请使用 skills/platform-adaptation/SKILL.md 进行多平台改写，
-    生成的 HTML 文件可直接复制粘贴到微信后台编辑器。
-
-    本命令保留用于向后兼容，未来版本将移除。
-    """
-    import warnings
-    warnings.warn(
-        "cmd_publish is deprecated. "
-        "Use skills/platform-adaptation for multi-platform output.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-    cfg = load_config()
-    wechat_cfg = cfg.get("wechat", {})
-
-    # Resolve from CLI args → config.yaml fallback
-    appid = args.appid or wechat_cfg.get("appid")
-    secret = args.secret or wechat_cfg.get("secret")
-    theme_name = args.theme or cfg.get("theme", "professional-clean")
-    author = args.author or wechat_cfg.get("author")
-
-    if not appid or not secret:
-        print("Error: --appid and --secret required (or set in config.yaml)", file=sys.stderr)
-        sys.exit(1)
-
-    theme = load_theme(theme_name)
-    converter = WeChatConverter(theme=theme)
-    result = converter.convert_file(args.input)
-
-    print(f"Title: {result.title}")
-    print(f"Digest: {result.digest}")
-    print(f"Images found: {len(result.images)}")
-
-    # Get access token
-    token = get_access_token(appid, secret)
-    print("Access token obtained.")
-
-    # Upload images referenced in article and replace src
-    # Resolve relative paths against the markdown file's directory
-    md_dir = Path(args.input).resolve().parent
-    html = result.html
-    for img_src in result.images:
-        if img_src.startswith(("http://", "https://")):
-            print(f"Skipping remote image: {img_src}")
-            continue
-
-        # Try: absolute → relative to CWD → relative to markdown file
-        img_path = Path(img_src)
-        if not img_path.is_absolute():
-            if not img_path.exists():
-                img_path = md_dir / img_src
-
-        if img_path.exists():
-            print(f"Uploading image: {img_src}")
-            wechat_url = upload_image(token, str(img_path))
-            html = html.replace(img_src, wechat_url)
-            print(f"  -> {wechat_url}")
-        else:
-            print(f"Warning: image not found: {img_src} (searched {md_dir})")
-
-    # Upload cover image if provided
-    thumb_media_id = None
-    if args.cover:
-        print(f"Uploading cover: {args.cover}")
-        thumb_media_id = upload_thumb(token, args.cover)
-        print(f"  -> media_id: {thumb_media_id}")
-
-    # Create draft
-    title = args.title or result.title or Path(args.input).stem
-    digest = args.digest or result.digest
-    draft = create_draft(
-        access_token=token,
-        title=title,
-        html=html,
-        digest=digest,
-        thumb_media_id=thumb_media_id,
-        author=author,
-    )
-
-    print(f"\nDraft created! media_id: {draft.media_id}")
-
-
 def cmd_themes(args):
     """List available themes."""
     names = list_themes()
     for name in names:
         theme = load_theme(name)
         print(f"  {name:24s} {theme.description}")
-
-
-def cmd_image_post(args):
-    """Create a WeChat image post (小绿书) from image files."""
-    cfg = load_config()
-    wechat_cfg = cfg.get("wechat", {})
-
-    appid = args.appid or wechat_cfg.get("appid")
-    secret = args.secret or wechat_cfg.get("secret")
-
-    if not appid or not secret:
-        print("Error: --appid and --secret required (or set in config.yaml)", file=sys.stderr)
-        sys.exit(1)
-
-    images = args.images
-    if not images:
-        print("Error: at least 1 image required", file=sys.stderr)
-        sys.exit(1)
-    if len(images) > 20:
-        print(f"Error: max 20 images, got {len(images)}", file=sys.stderr)
-        sys.exit(1)
-
-    token = get_access_token(appid, secret)
-    print(f"Uploading {len(images)} images as permanent materials...")
-
-    media_ids = []
-    for img_path in images:
-        p = Path(img_path)
-        if not p.exists():
-            print(f"Error: image not found: {img_path}", file=sys.stderr)
-            sys.exit(1)
-        print(f"  Uploading: {p.name}")
-        mid = upload_thumb(token, str(p))
-        media_ids.append(mid)
-        print(f"    -> {mid}")
-
-    title = args.title
-    if len(title) > 32:
-        print(f"Warning: title truncated to 32 chars (was {len(title)})")
-        title = title[:32]
-
-    content = args.content or ""
-
-    result = create_image_post(
-        access_token=token,
-        title=title,
-        image_media_ids=media_ids,
-        content=content,
-        open_comment=True,
-    )
-
-    print(f"\nImage post draft created!")
-    print(f"  media_id: {result.media_id}")
-    print(f"  images: {result.image_count}")
-    print(f"  title: {title}")
-    print(f"  请到公众号后台草稿箱检查并发布")
 
 
 def cmd_gallery(args):
@@ -401,7 +256,7 @@ function selectTheme(name) {{
 def main():
     parser = argparse.ArgumentParser(
         prog="wewrite",
-        description="Markdown to WeChat HTML converter and publisher",
+        description="Markdown to WeChat HTML converter and preview",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -412,27 +267,8 @@ def main():
     p_preview.add_argument("-o", "--output", help="Output HTML file path")
     p_preview.add_argument("--no-open", action="store_true", help="Don't open browser")
 
-    # publish
-    p_publish = sub.add_parser("publish", help="Convert and publish as WeChat draft")
-    p_publish.add_argument("input", help="Markdown file path")
-    p_publish.add_argument("-t", "--theme", default=None, help="Theme name")
-    p_publish.add_argument("--appid", default=None, help="WeChat AppID (or set in config.yaml)")
-    p_publish.add_argument("--secret", default=None, help="WeChat AppSecret (or set in config.yaml)")
-    p_publish.add_argument("--cover", help="Cover image file path")
-    p_publish.add_argument("--title", help="Override article title")
-    p_publish.add_argument("--author", default=None, help="Article author")
-    p_publish.add_argument("--digest", default=None, help="Override article digest (≤120 UTF-8 bytes)")
-
     # themes
     sub.add_parser("themes", help="List available themes")
-
-    # image-post (小绿书)
-    p_imgpost = sub.add_parser("image-post", help="Create WeChat image post (小绿书)")
-    p_imgpost.add_argument("images", nargs="+", help="Image file paths (1-20, first = cover)")
-    p_imgpost.add_argument("-t", "--title", required=True, help="Post title (max 32 chars)")
-    p_imgpost.add_argument("-c", "--content", default="", help="Plain text description (max ~1000 chars)")
-    p_imgpost.add_argument("--appid", default=None, help="WeChat AppID")
-    p_imgpost.add_argument("--secret", default=None, help="WeChat AppSecret")
 
     # gallery
     p_gallery = sub.add_parser("gallery", help="Open theme gallery in browser")
@@ -459,12 +295,8 @@ def main():
     try:
         if args.command == "preview":
             cmd_preview(args)
-        elif args.command == "publish":
-            cmd_publish(args)
         elif args.command == "themes":
             cmd_themes(args)
-        elif args.command == "image-post":
-            cmd_image_post(args)
         elif args.command == "gallery":
             cmd_gallery(args)
         elif args.command == "learn-theme":

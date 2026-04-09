@@ -254,27 +254,20 @@ viral-content-factory/
 │   ├── materials.md            # 素材库
 │   └── audience.md             # 读者画像
 │
-├── dist/openclaw/              # OpenClaw 兼容版
 │
-├── scripts/                    # 数据采集 + 诊断 + 构建
+├── scripts/                    # 数据采集 + 分析脚本
 │   ├── fetch_hotspots.py        # 多平台热点抓取
 │   ├── seo_keywords.py          # SEO 关键词分析
-│   ├── fetch_stats.py           # 微信文章数据回填
-│   ├── build_playbook.py        # 从历史生成 Playbook
-│   ├── learn_edits.py           # 学习人工修改
 │   ├── humanness_score.py       # 文章质量打分（11项检测）
 │   ├── extract_exemplar.py      # 范文风格提取
 │   ├── learn_theme.py           # 提取排版主题
 │   ├── fetch_article.py         # 公号URL→Markdown
-│   ├── diagnose.py              # 配置完备度检查
-│   └── build_openclaw.py        # SKILL.md→OpenClaw转换
+│   └── diagnose.py              # 配置完备度检查
 │
 ├── toolkit/                     # Markdown→微信工具链
-│   ├── cli.py                   # CLI（preview/gallery/themes/image-post）
+│   ├── cli.py                   # CLI（preview/gallery/themes/render-poster）
 │   ├── converter.py             # Markdown→内联样式HTML+微信兼容修复
 │   ├── theme.py                 # YAML主题引擎
-│   ├── publisher.py             # 微信草稿箱API + 小绿书
-│   ├── wechat_api.py            # access_token/图片上传
 │   ├── image_gen.py             # AI图片生成（9provider，自动fallback）
 │   └── themes/                  # 16+排版主题（含暗黑模式）
 │

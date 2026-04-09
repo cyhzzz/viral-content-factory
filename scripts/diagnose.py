@@ -43,7 +43,6 @@ WEIGHTS = {
     # These have 0 weight (no anti-AI impact)
     "python_packages": 0,
     "config_file": 0,
-    "wechat_credentials": 0,
     "image_api_key": 0,
 }
 
@@ -89,7 +88,6 @@ def check_config():
             impact="skip_publish,skip_image_gen",
         ))
         # Can't check fields if file missing
-        checks.append(make_check("config", "wechat_credentials", "warn", "no config.yaml", impact="skip_publish"))
         checks.append(make_check("config", "image_api_key", "warn", "no config.yaml", impact="skip_image_gen"))
         return checks
 
@@ -97,13 +95,6 @@ def check_config():
 
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f) or {}
-
-    # WeChat credentials
-    wechat = cfg.get("wechat", {})
-    if wechat.get("appid") and wechat.get("secret"):
-        checks.append(make_check("config", "wechat_credentials", "pass", "configured"))
-    else:
-        checks.append(make_check("config", "wechat_credentials", "warn", "missing appid/secret", impact="skip_publish"))
 
     # Image API key
     image = cfg.get("image", {})

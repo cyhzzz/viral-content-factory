@@ -126,12 +126,11 @@ python3 scripts/diagnose.py  # 检查配置完备度
 │   ├── humanness_score.py        # 质量检查
 │   ├── extract_exemplar.py       # 风格提取
 │   ├── learn_theme.py            # 排版主题学习
-│   ├── learn_edits.py           # 风格飞轮
 │   ├── fetch_article.py         # 文章抓取（支持公众号/知乎/微博）
 │   └── diagnose.py              # 配置诊断
 │
 ├── toolkit/                       # 多平台输出工具链
-│   ├── cli.py                   # CLI（preview/gallery/image-post）
+│   ├── cli.py                   # CLI（preview/gallery/render-poster）
 │   ├── converter.py              # 多平台 converter
 │   ├── theme.py                 # YAML 主题引擎
 │   ├── image_gen.py             # AI 图片生成
