@@ -1,0 +1,46 @@
+# Credentials
+config.yaml
+
+# User data (generated at runtime, not tracked)
+style.yaml
+history.yaml
+playbook.md
+corpus/
+lessons/
+
+# Optimized writing parameters (user runs loop to generate their own)
+writing-config.yaml
+optimization-results.tsv
+
+# Generated output
+output/
+!output/.gitkeep
+
+# Exemplar library (user-specific content)
+references/exemplars/*.md
+references/exemplars/index.yaml
+
+# Legacy client directories
+clients/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/*
+!dist/openclaw/
+build/
+
+# Internal dev docs (except user guides which are tracked)
+docs/更新内容.txt
+
+# Large binaries
+*.zip
+
+# IDE
+.vscode/
+.idea/
